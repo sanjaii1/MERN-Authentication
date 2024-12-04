@@ -4,7 +4,7 @@
   "description": "backend folder for mern-auth",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon server.js"
   },
   "author": "sanjai",
   "license": "ISC",
@@ -18,5 +18,8 @@
     "mongoose": "^8.8.3",
     "nodemailer": "^6.9.16",
     "validator": "^13.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
   }
 }
