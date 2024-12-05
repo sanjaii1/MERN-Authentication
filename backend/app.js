@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const globalErrorHandler = require("./controller/errorController");
 
 const app = express();
 
@@ -21,8 +22,9 @@ app.use(
 
 // user
 
-app.all('*', (req, res, next)=>{
-next(new AppError(`Can't find ${req.originalUrl} on this servver!`, 404))
-})
+app.all("*", (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this servver!`, 404));
+});
 
-module.exports= app
+app.use(globalErrorHandler);
+module.exports = app;
