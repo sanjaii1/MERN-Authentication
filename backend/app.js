@@ -19,4 +19,10 @@ app.use(
   })
 );
 
+// user
+
+app.all('*', (req, res, next)=>{
+next(new AppError(`Can't find ${req.originalUrl} on this servver!`, 404))
+})
+
 module.exports= app
