@@ -1,5 +1,6 @@
 const User = require("../modal/userModal");
 const catchAsync = require("../utils/catchAsync");
+const sendEmail = require("../utils/email");
 const generateOtp = require("../utils/generateOtp");
 
 const jwt = require("jsonwebtoken");
@@ -59,7 +60,18 @@ exports.signup = catchAsync(async (req, res, next) => {
     optExpaires,
   });
 
+  try {
+    await sendEmail({
+      email: newUser.email,
+      subject: "OTP for email verification",
+      html: `<h1>Your OTP is : ${otp} </h1> `,
+    });
 
-
-  
+    createSendToken(newUser, 200, res, "Registration successful");
+  } catch (error) {
+    await User.findByIdAndDelete(newUser.id);
+    return next(
+      new AppError("There is an error sending the email. Try aggain.", 500)
+    );
+  }
 });
