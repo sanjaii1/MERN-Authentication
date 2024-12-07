@@ -2,11 +2,13 @@ const User = require("../modal/userModal");
 const catchAsync = require("../utils/catchAsync");
 const sendEmail = require("../utils/email");
 const generateOtp = require("../utils/generateOtp");
+const AppError = require('../utils/appError');
+
 
 const jwt = require("jsonwebtoken");
 
 const signToken = (id) => {
-  return jwt.signToken({ id }, process.env.JWT_SECRET, {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
@@ -41,7 +43,7 @@ const createSendToken = (user, statusCode, res, message) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { email, password, passwordConfirm, username } = res.body;
+  const { email, password, passwordConfirm, username } = req.body;
 
   const existingUser = await User.findOne({ email });
 
@@ -49,7 +51,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const otp = generateOtp();
 
-  const optExpaires = Date.now() * 24 * 60 * 60 * 1000;
+  const optExpaires = Date.now() + 24 * 60 * 60 * 1000;
 
   const newUser = await User.create({
     username,
@@ -69,9 +71,10 @@ exports.signup = catchAsync(async (req, res, next) => {
 
     createSendToken(newUser, 200, res, "Registration successful");
   } catch (error) {
+    console.error("Error sending email:", error); 
     await User.findByIdAndDelete(newUser.id);
     return next(
-      new AppError("There is an error sending the email. Try aggain.", 500)
+      new AppError("There is an error sending the email. Try again.", 500)
     );
   }
 });
